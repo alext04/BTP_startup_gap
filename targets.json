@@ -1,0 +1,24 @@
+{
+  "subfields": [
+    {
+      "name": "Solid-State Batteries",
+      "core_term": "solid-state battery",
+      "secondary_term": "energy storage"
+    },
+    {
+      "name": "Metal-Organic Frameworks",
+      "core_term": "metal-organic framework",
+      "secondary_term": "porous material"
+    },
+    {
+      "name": "GenAI for Crystals",
+      "core_term": "generative AI crystal",
+      "secondary_term": "materials discovery"
+    },
+    {
+      "name": "Computational Cement",
+      "core_term": "computational cement",
+      "secondary_term": "concrete modeling"
+    }
+  ]
+}
