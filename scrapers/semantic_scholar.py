@@ -32,6 +32,9 @@ class SemanticScholarScraper:
         """Make a rate-limited request to Semantic Scholar API."""
         try:
             time.sleep(self.rate_limit_delay)
+            # Use limit=1 instead of 0 to avoid 500 errors
+            if params.get("limit") == 0:
+                params["limit"] = 1
             response = self.session.get(self.BASE_URL, params=params, timeout=30)
             response.raise_for_status()
             return response.json()

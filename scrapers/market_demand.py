@@ -33,19 +33,20 @@ class StackOverflowScraper:
     def get_question_volume(self, core_term: str, secondary_term: str) -> Optional[int]:
         """
         Get question volume for the last 12 months.
-        
+
         Args:
             core_term: Primary search term
             secondary_term: Secondary search term
-            
+
         Returns:
             Total question count or None if request fails.
         """
         # Calculate date range for last 12 months
         end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(days=365)
-        
-        query = f"[{core_term}] [{secondary_term}]"
+
+        # Use OR logic for better results
+        query = f"{core_term} OR {secondary_term}"
         params = {
             "q": query,
             "fromdate": int(start_date.timestamp()),
@@ -53,7 +54,7 @@ class StackOverflowScraper:
             "site": "stackoverflow",
             "pagesize": 1  # We only need the count
         }
-        
+
         result = self._make_request(params)
         if result:
             return result.get("total", 0)
@@ -62,26 +63,27 @@ class StackOverflowScraper:
     def get_question_growth_rate(self, core_term: str, secondary_term: str) -> Optional[float]:
         """
         Calculate YoY question growth rate (recent 6 months vs previous 6 months).
-        
+
         Args:
             core_term: Primary search term
             secondary_term: Secondary search term
-            
+
         Returns:
             Growth rate percentage or None if request fails.
         """
         now = datetime.now(timezone.utc)
-        
+
         # Recent 6 months
         recent_end = now
         recent_start = now - timedelta(days=180)
-        
+
         # Previous 6 months
         prev_end = recent_start
         prev_start = prev_end - timedelta(days=180)
-        
-        query = f"[{core_term}] [{secondary_term}]"
-        
+
+        # Use OR logic for better results
+        query = f"{core_term} OR {secondary_term}"
+
         # Get recent period count
         params_recent = {
             "q": query,
@@ -92,7 +94,7 @@ class StackOverflowScraper:
         }
         result_recent = self._make_request(params_recent)
         count_recent = result_recent.get("total", 0) if result_recent else 0
-        
+
         # Get previous period count
         params_prev = {
             "q": query,
@@ -160,21 +162,21 @@ class GitHubScraper:
     def get_repo_count(self, core_term: str, secondary_term: str) -> Optional[int]:
         """
         Get repository count created in the last 3 years.
-        
+
         Args:
             core_term: Primary search term
             secondary_term: Secondary search term
-            
+
         Returns:
             Total repo count or None if request fails.
         """
-        # Search for repos created in 2023-2025
-        query = f'"{core_term}" "{secondary_term}" created:2023-01-01..2025-12-31'
+        # Search for repos created in 2023-2025 using OR logic for better results
+        query = f'"{core_term}" OR "{secondary_term}" created:2023-01-01..2025-12-31'
         params = {
             "q": query,
             "per_page": 1  # We only need the count
         }
-        
+
         result = self._make_request(params)
         if result and "total_count" in result:
             return result["total_count"]
@@ -183,25 +185,25 @@ class GitHubScraper:
     def get_star_growth_rate(self, core_term: str, secondary_term: str) -> Optional[float]:
         """
         Calculate YoY star growth for repos (2025 vs 2024).
-        
+
         Args:
             core_term: Primary search term
             secondary_term: Secondary search term
-            
+
         Returns:
             Star growth rate percentage or None if request fails.
         """
-        # Get repos from 2024
-        query_2024 = f'"{core_term}" "{secondary_term}" created:2024-01-01..2024-12-31'
+        # Get repos from 2024 using OR logic
+        query_2024 = f'"{core_term}" OR "{secondary_term}" created:2024-01-01..2024-12-31'
         params_2024 = {
             "q": query_2024,
             "per_page": 10,
             "sort": "stars"
         }
         result_2024 = self._make_request(params_2024)
-        
-        # Get repos from 2025
-        query_2025 = f'"{core_term}" "{secondary_term}" created:2025-01-01..2025-12-31'
+
+        # Get repos from 2025 using OR logic
+        query_2025 = f'"{core_term}" OR "{secondary_term}" created:2025-01-01..2025-12-31'
         params_2025 = {
             "q": query_2025,
             "per_page": 10,
