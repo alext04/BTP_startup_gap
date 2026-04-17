@@ -1,24 +1,29 @@
 {
   "subfields": [
     {
-      "name": "Solid-State Batteries",
-      "core_term": "solid-state battery",
-      "secondary_term": "energy storage"
+      "name": "CV in Sports Analytics",
+      "core_term": "computer vision sports",
+      "secondary_term": "sports analytics"
     },
     {
-      "name": "Metal-Organic Frameworks",
-      "core_term": "metal-organic framework",
-      "secondary_term": "porous material"
+      "name": "Autonomous Drone Navigation",
+      "core_term": "autonomous drone navigation",
+      "secondary_term": "UAV path planning"
     },
     {
-      "name": "GenAI for Crystals",
-      "core_term": "generative AI crystal",
-      "secondary_term": "materials discovery"
+      "name": "Digital Twin Manufacturing",
+      "core_term": "digital twin manufacturing",
+      "secondary_term": "smart factory simulation"
     },
     {
-      "name": "Computational Cement",
-      "core_term": "computational cement",
-      "secondary_term": "concrete modeling"
+      "name": "AI for Drug Discovery",
+      "core_term": "artificial intelligence drug discovery",
+      "secondary_term": "AI molecule design"
+    },
+    {
+      "name": "Edge AI for IoT",
+      "core_term": "edge computing AI",
+      "secondary_term": "IoT machine learning"
     }
   ]
 }

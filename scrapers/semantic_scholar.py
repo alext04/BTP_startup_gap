@@ -26,21 +26,33 @@ class SemanticScholarScraper:
         self.session = requests.Session()
         if api_key:
             self.session.headers.update({"x-api-key": api_key})
-        self.rate_limit_delay = 1.0  # seconds between requests
+        self.rate_limit_delay = 3.5  # 100 req/5min without API key
     
     def _make_request(self, params: Dict) -> Optional[Dict]:
-        """Make a rate-limited request to Semantic Scholar API."""
-        try:
-            time.sleep(self.rate_limit_delay)
-            # Use limit=1 instead of 0 to avoid 500 errors
-            if params.get("limit") == 0:
-                params["limit"] = 1
-            response = self.session.get(self.BASE_URL, params=params, timeout=30)
-            response.raise_for_status()
-            return response.json()
-        except requests.RequestException as e:
-            print(f"Semantic Scholar API error: {e}")
-            return None
+        """Make a rate-limited request to Semantic Scholar API with retry."""
+        max_retries = 3
+        delay = self.rate_limit_delay
+
+        for attempt in range(max_retries + 1):
+            try:
+                time.sleep(delay)
+                if params.get("limit") == 0:
+                    params["limit"] = 1
+                response = self.session.get(self.BASE_URL, params=params, timeout=30)
+                if response.status_code == 429:
+                    delay = min(delay * 3, 30)  # Exponential backoff
+                    print(f"  Semantic Scholar rate limited, retrying in {delay}s (attempt {attempt+1}/{max_retries})")
+                    continue
+                response.raise_for_status()
+                return response.json()
+            except requests.RequestException as e:
+                if attempt < max_retries and "429" in str(e):
+                    delay = min(delay * 3, 30)
+                    print(f"  Retrying in {delay}s...")
+                    continue
+                print(f"Semantic Scholar API error: {e}")
+                return None
+        return None
     
     def get_paper_count(self, core_term: str, secondary_term: str) -> Optional[int]:
         """

@@ -1,0 +1,123 @@
+{
+  "metadata": {
+    "generated_at": "20260417_104436",
+    "subfield_count": 5
+  },
+  "signals": [
+    {
+      "subfield_name": "CV in Sports Analytics",
+      "search_terms": {
+        "core": "computer vision sports",
+        "secondary": "sports analytics"
+      },
+      "paper_count_3yr": 795,
+      "citation_intensity_avg": "N/A",
+      "paper_growth_rate_yoy": 0.0,
+      "scrape_timestamp": "2026-04-17T10:45:12.895926+00:00",
+      "source": "github",
+      "patent_count_3yr": "N/A",
+      "npl_citation_rate": "N/A",
+      "corporate_patent_share": "N/A",
+      "form_d_filing_count_3yr": 1,
+      "form_d_capital_deployed_mil": 5.75,
+      "form_d_filing_growth_yoy": 0.0,
+      "so_question_volume": 0,
+      "so_question_growth": 0.0,
+      "github_repo_count_3y": 1440,
+      "github_star_growth": 106.02,
+      "combined_timestamp": "2026-04-17T10:45:12.895964+00:00"
+    },
+    {
+      "subfield_name": "Autonomous Drone Navigation",
+      "search_terms": {
+        "core": "autonomous drone navigation",
+        "secondary": "UAV path planning"
+      },
+      "paper_count_3yr": 484,
+      "citation_intensity_avg": "N/A",
+      "paper_growth_rate_yoy": 0.0,
+      "scrape_timestamp": "2026-04-17T10:45:47.579293+00:00",
+      "source": "github",
+      "patent_count_3yr": "N/A",
+      "npl_citation_rate": "N/A",
+      "corporate_patent_share": "N/A",
+      "form_d_filing_count_3yr": 0,
+      "form_d_capital_deployed_mil": 0.0,
+      "form_d_filing_growth_yoy": 0.0,
+      "so_question_volume": 0,
+      "so_question_growth": 0.0,
+      "github_repo_count_3y": 286,
+      "github_star_growth": -25.14,
+      "combined_timestamp": "2026-04-17T10:45:47.579323+00:00"
+    },
+    {
+      "subfield_name": "Digital Twin Manufacturing",
+      "search_terms": {
+        "core": "digital twin manufacturing",
+        "secondary": "smart factory simulation"
+      },
+      "paper_count_3yr": "N/A",
+      "citation_intensity_avg": "N/A",
+      "paper_growth_rate_yoy": 0.0,
+      "scrape_timestamp": "2026-04-17T10:46:19.438420+00:00",
+      "source": "github",
+      "patent_count_3yr": "N/A",
+      "npl_citation_rate": "N/A",
+      "corporate_patent_share": "N/A",
+      "form_d_filing_count_3yr": 0,
+      "form_d_capital_deployed_mil": 0.0,
+      "form_d_filing_growth_yoy": 0.0,
+      "so_question_volume": 0,
+      "so_question_growth": 0.0,
+      "github_repo_count_3y": 19,
+      "github_star_growth": -20.0,
+      "combined_timestamp": "2026-04-17T10:46:19.438474+00:00"
+    },
+    {
+      "subfield_name": "AI for Drug Discovery",
+      "search_terms": {
+        "core": "artificial intelligence drug discovery",
+        "secondary": "AI molecule design"
+      },
+      "paper_count_3yr": "N/A",
+      "citation_intensity_avg": 29.7,
+      "paper_growth_rate_yoy": 0.0,
+      "scrape_timestamp": "2026-04-17T10:46:54.467895+00:00",
+      "source": "github",
+      "patent_count_3yr": "N/A",
+      "npl_citation_rate": "N/A",
+      "corporate_patent_share": "N/A",
+      "form_d_filing_count_3yr": 0,
+      "form_d_capital_deployed_mil": 0.0,
+      "form_d_filing_growth_yoy": 0.0,
+      "so_question_volume": 0,
+      "so_question_growth": 0.0,
+      "github_repo_count_3y": 1,
+      "github_star_growth": 0.0,
+      "combined_timestamp": "2026-04-17T10:46:54.467937+00:00"
+    },
+    {
+      "subfield_name": "Edge AI for IoT",
+      "search_terms": {
+        "core": "edge computing AI",
+        "secondary": "IoT machine learning"
+      },
+      "paper_count_3yr": "N/A",
+      "citation_intensity_avg": "N/A",
+      "paper_growth_rate_yoy": 0.0,
+      "scrape_timestamp": "2026-04-17T10:47:28.835141+00:00",
+      "source": "github",
+      "patent_count_3yr": "N/A",
+      "npl_citation_rate": "N/A",
+      "corporate_patent_share": "N/A",
+      "form_d_filing_count_3yr": 0,
+      "form_d_capital_deployed_mil": 0.0,
+      "form_d_filing_growth_yoy": 0.0,
+      "so_question_volume": 0,
+      "so_question_growth": 0.0,
+      "github_repo_count_3y": 69,
+      "github_star_growth": -71.43,
+      "combined_timestamp": "2026-04-17T10:47:28.835181+00:00"
+    }
+  ]
+}

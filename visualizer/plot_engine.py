@@ -109,7 +109,10 @@ class VisualizationAgent:
         ]
         area_b_sil = [
             'NPL Citation Rate (3yr %)',
-            'Corporate Patent Share (3yr %)'
+            'Corporate Patent Share (3yr %)',
+            'Form-D Filing Count (3yr)',
+            'Capital Deployed (3yr $M)',
+            'PE/VC Filing Growth (YoY %)'
         ]
         area_c = [
             'SO Question Vol (12mo)',

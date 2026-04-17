@@ -11,6 +11,7 @@ from typing import Dict, List, Optional
 from scrapers.semantic_scholar import SemanticScholarScraper
 from scrapers.lens_org import LensOrgScraper
 from scrapers.market_demand import MarketDemandScraper
+from scrapers.edgar_form_d import EdgarFormDScraper
 
 
 class ScraperAgent:
@@ -38,6 +39,7 @@ class ScraperAgent:
         self.semantic_scholar = SemanticScholarScraper(semantic_scholar_api_key)
         self.lens_org = LensOrgScraper()
         self.market_demand = MarketDemandScraper(github_token)
+        self.edgar_form_d = EdgarFormDScraper()
         self.output_dir = output_dir
     
     def scrape_subfield(self, subfield_name: str, core_term: str, secondary_term: str) -> Dict:
@@ -58,6 +60,7 @@ class ScraperAgent:
         # Scrape from all sources
         research_data = self.semantic_scholar.scrape(core_term, secondary_term)
         patent_data = self.lens_org.scrape(core_term, secondary_term)
+        form_d_data = self.edgar_form_d.scrape(core_term, secondary_term)
         market_data = self.market_demand.scrape(core_term, secondary_term)
         
         # Combine all data
@@ -69,6 +72,7 @@ class ScraperAgent:
             },
             **research_data,
             **patent_data,
+            **form_d_data,
             **market_data
         }
         
@@ -116,6 +120,9 @@ class ScraperAgent:
                     "patent_count_3yr": "N/A",
                     "npl_citation_rate": "N/A",
                     "corporate_patent_share": "N/A",
+                    "form_d_filing_count_3yr": "N/A",
+                    "form_d_capital_deployed_mil": "N/A",
+                    "form_d_filing_growth_yoy": "N/A",
                     "so_question_volume": "N/A",
                     "so_question_growth": "N/A",
                     "github_repo_count_3y": "N/A",
