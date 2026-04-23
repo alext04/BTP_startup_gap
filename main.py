@@ -40,7 +40,7 @@ class Orchestrator:
         output_dir: str = ".",
         logs_dir: str = "logs",
         semantic_scholar_api_key: Optional[str] = None,
-        github_token: Optional[str] = None
+        product_hunt_token: Optional[str] = None
     ):
         """
         Initialize the Orchestrator.
@@ -49,7 +49,7 @@ class Orchestrator:
             output_dir: Directory for all output files.
             logs_dir: Directory for log files.
             semantic_scholar_api_key: Optional API key for Semantic Scholar.
-            github_token: Optional GitHub token for higher rate limits.
+            product_hunt_token: Optional Product Hunt token for authentication.
         """
         self.output_dir = output_dir
         self.logs_dir = logs_dir
@@ -64,7 +64,7 @@ class Orchestrator:
         # Initialize agents
         self.scraper = ScraperAgent(
             semantic_scholar_api_key=semantic_scholar_api_key,
-            github_token=github_token,
+            product_hunt_token=product_hunt_token,
             output_dir=output_dir
         )
         self.architect = DataArchitect(output_dir=output_dir, logs_dir=logs_dir)
@@ -273,8 +273,8 @@ Examples:
         help="Semantic Scholar API key (optional)"
     )
     parser.add_argument(
-        "--github-token",
-        help="GitHub personal access token (optional)"
+        "--product-hunt-token",
+        help="Product Hunt personal access token (optional)"
     )
     parser.add_argument(
         "--skip-scrape",
@@ -305,7 +305,7 @@ Examples:
         output_dir=args.output,
         logs_dir=args.logs,
         semantic_scholar_api_key=args.semantic_scholar_key,
-        github_token=args.github_token
+        product_hunt_token=args.product_hunt_token
     )
     
     results = orchestrator.run_pipeline(

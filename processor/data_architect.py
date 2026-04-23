@@ -19,13 +19,11 @@ CSV_COLUMNS = [
     "Patent Count (3yr)",
     "NPL Citation Rate (3yr %)",
     "Corporate Patent Share (3yr %)",
+    "Product Hunt Launches (3yr)",
+    "Product Hunt Growth (YoY %)",
     "Form-D Filing Count (3yr)",
     "Capital Deployed (3yr $M)",
-    "PE/VC Filing Growth (YoY %)",
-    "SO Question Vol (12mo)",
-    "SO Question Growth (12mo %)",
-    "GitHub Repo Count (3Y)",
-    "GitHub Star Growth (12mo %)"
+    "PE/VC Filing Growth (YoY %)"
 ]
 
 
@@ -125,13 +123,11 @@ class DataArchitect:
             "Patent Count (3yr)": self._clean_numeric(raw_data.get("patent_count_3yr")),
             "NPL Citation Rate (3yr %)": self._clean_numeric(raw_data.get("npl_citation_rate")),
             "Corporate Patent Share (3yr %)": self._clean_numeric(raw_data.get("corporate_patent_share")),
+            "Product Hunt Launches (3yr)": self._clean_numeric(raw_data.get("ph_launches_3yr")),
+            "Product Hunt Growth (YoY %)": self._clean_numeric(raw_data.get("ph_growth_yoy")),
             "Form-D Filing Count (3yr)": self._clean_numeric(raw_data.get("form_d_filing_count_3yr")),
             "Capital Deployed (3yr $M)": self._clean_numeric(raw_data.get("form_d_capital_deployed_mil")),
-            "PE/VC Filing Growth (YoY %)": self._clean_numeric(raw_data.get("form_d_filing_growth_yoy")),
-            "SO Question Vol (12mo)": self._clean_numeric(raw_data.get("so_question_volume")),
-            "SO Question Growth (12mo %)": self._clean_numeric(raw_data.get("so_question_growth")),
-            "GitHub Repo Count (3Y)": self._clean_numeric(raw_data.get("github_repo_count_3y")),
-            "GitHub Star Growth (12mo %)": self._clean_numeric(raw_data.get("github_star_growth"))
+            "PE/VC Filing Growth (YoY %)": self._clean_numeric(raw_data.get("form_d_filing_growth_yoy"))
         }
         
         return row

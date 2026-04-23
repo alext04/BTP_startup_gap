@@ -76,10 +76,24 @@ def compute_metrics(df, config):
     df = df.copy()
 
     # Column mapping based on the exact columns in the CSV template
-    area_a = ['Paper Count (3yr)', 'Citation Intensity (3yr avg)', 'Paper Growth Rate (YoY %)']
-    # Based on the PDF, SIL depends on NPL and Corporate Share
-    area_b_sil = ['NPL Citation Rate (3yr %)', 'Corporate Patent Share (3yr %)'] 
-    area_c = ['SO Question Vol (12mo)', 'SO Question Growth (12mo %)', 'GitHub Repo Count (3Y)', 'GitHub Star Growth (12mo %)']
+    area_a = [
+        'Paper Count (3yr)', 
+        'Citation Intensity (3yr avg)', 
+        'Paper Growth Rate (YoY %)'
+    ]
+    
+    area_b_sil = [
+        'NPL Citation Rate (3yr %)', 
+        'Corporate Patent Share (3yr %)'
+    ] 
+    
+    area_c = [
+        'Product Hunt Launches (3yr)', 
+        'Product Hunt Growth (YoY %)', 
+        'Form-D Filing Count (3yr)', 
+        'Capital Deployed (3yr $M)', 
+        'PE/VC Filing Growth (YoY %)'
+    ]
 
     # 1. Standardize all base variables individually
     for col in area_a + area_b_sil + area_c:
