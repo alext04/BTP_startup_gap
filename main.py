@@ -40,6 +40,7 @@ class Orchestrator:
         output_dir: str = ".",
         logs_dir: str = "logs",
         semantic_scholar_api_key: Optional[str] = None,
+        lens_api_key: Optional[str] = None,
         product_hunt_token: Optional[str] = None
     ):
         """
@@ -49,6 +50,7 @@ class Orchestrator:
             output_dir: Directory for all output files.
             logs_dir: Directory for log files.
             semantic_scholar_api_key: Optional API key for Semantic Scholar.
+            lens_api_key: Optional API key for Lens.org.
             product_hunt_token: Optional Product Hunt token for authentication.
         """
         self.output_dir = output_dir
@@ -64,6 +66,7 @@ class Orchestrator:
         # Initialize agents
         self.scraper = ScraperAgent(
             semantic_scholar_api_key=semantic_scholar_api_key,
+            lens_api_key=lens_api_key,
             product_hunt_token=product_hunt_token,
             output_dir=output_dir
         )
@@ -273,6 +276,10 @@ Examples:
         help="Semantic Scholar API key (optional)"
     )
     parser.add_argument(
+        "--lens-api-key",
+        help="Lens.org API key (optional)"
+    )
+    parser.add_argument(
         "--product-hunt-token",
         help="Product Hunt personal access token (optional)"
     )
@@ -305,6 +312,7 @@ Examples:
         output_dir=args.output,
         logs_dir=args.logs,
         semantic_scholar_api_key=args.semantic_scholar_key,
+        lens_api_key=args.lens_api_key,
         product_hunt_token=args.product_hunt_token
     )
     

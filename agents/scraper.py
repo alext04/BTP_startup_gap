@@ -26,6 +26,7 @@ class ScraperAgent:
     def __init__(
         self,
         semantic_scholar_api_key: Optional[str] = None,
+        lens_api_key: Optional[str] = None,
         product_hunt_token: Optional[str] = None,
         output_dir: str = "."
     ):
@@ -34,11 +35,12 @@ class ScraperAgent:
         
         Args:
             semantic_scholar_api_key: Optional API key for Semantic Scholar.
+            lens_api_key: Optional API key for Lens.org.
             product_hunt_token: Optional Product Hunt token for authentication.
             output_dir: Directory to save raw signal files.
         """
         self.semantic_scholar = SemanticScholarScraper(semantic_scholar_api_key)
-        self.lens_org = LensOrgScraper()
+        self.lens_org = LensOrgScraper(lens_api_key)
         self.product_hunt = ProductHuntScraper(product_hunt_token)
         self.edgar_form_d = EdgarFormDScraper()
         self.output_dir = output_dir

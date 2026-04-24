@@ -1,0 +1,108 @@
+{
+  "metadata": {
+    "generated_at": "20260423_043223",
+    "subfield_count": 5
+  },
+  "signals": [
+    {
+      "subfield_name": "CV in Sports Analytics",
+      "search_terms": {
+        "core": "computer vision sports",
+        "secondary": "sports analytics"
+      },
+      "paper_count_3yr": 796,
+      "citation_intensity_avg": "N/A",
+      "paper_growth_rate_yoy": 0.0,
+      "scrape_timestamp": "2026-04-23T04:36:43.011480+00:00",
+      "source": "product_hunt",
+      "patent_count_3yr": "N/A",
+      "npl_citation_rate": "N/A",
+      "corporate_patent_share": "N/A",
+      "form_d_filing_count_3yr": 1,
+      "form_d_capital_deployed_mil": 5.75,
+      "form_d_filing_growth_yoy": 0.0,
+      "ph_launches_3yr": 0,
+      "ph_growth_yoy": 0.0
+    },
+    {
+      "subfield_name": "Autonomous Drone Navigation",
+      "search_terms": {
+        "core": "autonomous drone navigation",
+        "secondary": "UAV path planning"
+      },
+      "paper_count_3yr": "N/A",
+      "citation_intensity_avg": "N/A",
+      "paper_growth_rate_yoy": 0.0,
+      "scrape_timestamp": "2026-04-23T04:42:01.674582+00:00",
+      "source": "product_hunt",
+      "patent_count_3yr": "N/A",
+      "npl_citation_rate": "N/A",
+      "corporate_patent_share": "N/A",
+      "form_d_filing_count_3yr": 0,
+      "form_d_capital_deployed_mil": 0.0,
+      "form_d_filing_growth_yoy": 0.0,
+      "ph_launches_3yr": 0,
+      "ph_growth_yoy": 0.0
+    },
+    {
+      "subfield_name": "Digital Twin Manufacturing",
+      "search_terms": {
+        "core": "digital twin manufacturing",
+        "secondary": "smart factory simulation"
+      },
+      "paper_count_3yr": 422,
+      "citation_intensity_avg": "N/A",
+      "paper_growth_rate_yoy": 0.0,
+      "scrape_timestamp": "2026-04-23T06:24:47.171490+00:00",
+      "source": "product_hunt",
+      "patent_count_3yr": "N/A",
+      "npl_citation_rate": "N/A",
+      "corporate_patent_share": "N/A",
+      "form_d_filing_count_3yr": 0,
+      "form_d_capital_deployed_mil": 0.0,
+      "form_d_filing_growth_yoy": 0.0,
+      "ph_launches_3yr": 0,
+      "ph_growth_yoy": 0.0
+    },
+    {
+      "subfield_name": "AI for Drug Discovery",
+      "search_terms": {
+        "core": "artificial intelligence drug discovery",
+        "secondary": "AI molecule design"
+      },
+      "paper_count_3yr": "N/A",
+      "citation_intensity_avg": "N/A",
+      "paper_growth_rate_yoy": 0.0,
+      "scrape_timestamp": "2026-04-23T06:25:10.845186+00:00",
+      "source": "product_hunt",
+      "patent_count_3yr": "N/A",
+      "npl_citation_rate": "N/A",
+      "corporate_patent_share": "N/A",
+      "form_d_filing_count_3yr": 0,
+      "form_d_capital_deployed_mil": 0.0,
+      "form_d_filing_growth_yoy": 0.0,
+      "ph_launches_3yr": 0,
+      "ph_growth_yoy": 0.0
+    },
+    {
+      "subfield_name": "Edge AI for IoT",
+      "search_terms": {
+        "core": "edge computing AI",
+        "secondary": "IoT machine learning"
+      },
+      "paper_count_3yr": "N/A",
+      "citation_intensity_avg": "N/A",
+      "paper_growth_rate_yoy": 0.0,
+      "scrape_timestamp": "2026-04-23T06:46:17.840900+00:00",
+      "source": "product_hunt",
+      "patent_count_3yr": "N/A",
+      "npl_citation_rate": "N/A",
+      "corporate_patent_share": "N/A",
+      "form_d_filing_count_3yr": 0,
+      "form_d_capital_deployed_mil": 0.0,
+      "form_d_filing_growth_yoy": 0.0,
+      "ph_launches_3yr": 0,
+      "ph_growth_yoy": 0.0
+    }
+  ]
+}

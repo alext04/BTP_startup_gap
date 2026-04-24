@@ -14,23 +14,46 @@ class LensOrgScraper:
     """Scraper for Lens.org patent metrics."""
     
     BASE_URL = "https://www.lens.org/lens/search/patent/search"
-    API_URL = "https://api.lens.org/patents"
+    API_URL = "https://api.lens.org/patent/search"
     DATE_RANGE_START = "2023-01-01"
     DATE_RANGE_END = "2025-12-31"
     
-    def __init__(self):
-        """Initialize the scraper with a session."""
+    def __init__(self, api_key: Optional[str] = None):
+        """Initialize the scraper with a session and optional API key."""
+        self.api_key = api_key
         self.session = requests.Session()
         self.session.headers.update({
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         })
+        if api_key:
+            self.session.headers.update({
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            })
         self.rate_limit_delay = 2.0  # seconds between requests (Lens.org is stricter)
     
-    def _make_request(self, url: str, params: Optional[Dict] = None) -> Optional[Dict]:
-        """Make a rate-limited request."""
+    @staticmethod
+    def _build_query(core_term: str, secondary_term: str) -> str:
+        """Build Lens.org boolean query from search terms."""
+        def term_to_bool(term: str) -> str:
+            words = term.strip().split()
+            if len(words) == 1:
+                return words[0]
+            return "(" + " AND ".join(words) + ")"
+        return f"{term_to_bool(core_term)} AND {term_to_bool(secondary_term)}"
+    
+    def _make_request(self, payload: Dict) -> Optional[Dict]:
+        """Make a rate-limited POST request to Lens.org API."""
+        if not self.api_key:
+            print("  [Lens.org] No API key provided, skipping API call")
+            return None
         try:
             time.sleep(self.rate_limit_delay)
-            response = self.session.get(url, params=params, timeout=30)
+            response = self.session.post(self.API_URL, json=payload, timeout=30)
+            if response.status_code == 429:
+                print("  [Lens.org] Rate limited, waiting 10s...")
+                time.sleep(10)
+                response = self.session.post(self.API_URL, json=payload, timeout=30)
             response.raise_for_status()
             return response.json()
         except requests.RequestException as e:
@@ -73,22 +96,19 @@ class LensOrgScraper:
         Returns:
             Total patent count or None if request fails.
         """
-        query = f'"{core_term}" "{secondary_term}"'
+        query = self._build_query(core_term, secondary_term)
         
-        # Try API first
-        params = {
+        payload = {
             "query": query,
-            "publication_date_min": self.DATE_RANGE_START,
-            "publication_date_max": self.DATE_RANGE_END,
             "size": 0  # Get count only
         }
         
-        result = self._make_request(self.API_URL, params)
-        if result and "count" in result:
-            return result["count"]
+        result = self._make_request(payload)
+        if result and "total" in result:
+            return result["total"]
         
         # Fallback to web scraping
-        return self._scrape_web_count(query)
+        return self._scrape_web_count(f'"{core_term}" "{secondary_term}"')
     
     def get_top_assignees(self, core_term: str, secondary_term: str, limit: int = 10) -> List[Dict]:
         """
@@ -102,25 +122,33 @@ class LensOrgScraper:
         Returns:
             List of assignee information or empty list if fails.
         """
-        query = f'"{core_term}" "{secondary_term}"'
+        query = self._build_query(core_term, secondary_term)
         
-        params = {
+        payload = {
             "query": query,
-            "publication_date_min": self.DATE_RANGE_START,
-            "publication_date_max": self.DATE_RANGE_END,
             "size": limit,
-            "sort": "cited_by_count:desc"
+            "include": ["biblio.parties"]
         }
         
-        result = self._make_request(self.API_URL, params)
-        if result and "results" in result:
-            patents = result["results"]
+        result = self._make_request(payload)
+        if result and "data" in result:
+            patents = result["data"]
             assignees = []
             for patent in patents:
+                parties = patent.get("biblio", {}).get("parties", {})
+                applicants = parties.get("applicants", [])
+                name = "Unknown"
+                if applicants:
+                    first = applicants[0]
+                    if isinstance(first, dict):
+                        en = first.get("extracted_name", {})
+                        name = en.get("value", "Unknown") if isinstance(en, dict) else str(en)
+                    else:
+                        name = str(first)
                 assignee_info = {
-                    "name": patent.get("applicant", ["Unknown"])[0] if isinstance(patent.get("applicant"), list) else patent.get("applicant", "Unknown"),
-                    "type": self._classify_assignee_type(patent.get("applicant", [])),
-                    "has_npl_citations": len(patent.get("cited_works", [])) > 0
+                    "name": name,
+                    "type": self._classify_assignee_type([name]),
+                    "has_npl_citations": bool(patent.get("biblio", {}).get("references_cited", {}).get("npl_citations", []))
                 }
                 assignees.append(assignee_info)
             return assignees
@@ -191,36 +219,26 @@ class LensOrgScraper:
         Returns:
             NPL citation rate percentage or None if fails.
         """
-        query = f'"{core_term}" "{secondary_term}"'
+        query = self._build_query(core_term, secondary_term)
         
-        params = {
+        payload = {
             "query": query,
-            "publication_date_min": self.DATE_RANGE_START,
-            "publication_date_max": self.DATE_RANGE_END,
             "size": 10,
-            "sort": "cited_by_count:desc"
+            "include": ["biblio.references_cited"]
         }
         
-        result = self._make_request(self.API_URL, params)
-        if result and "results" in result:
-            patents = result["results"]
+        result = self._make_request(payload)
+        if result and "data" in result:
+            patents = result["data"]
             if not patents:
                 return 0
             
             npl_count = 0
             for patent in patents:
-                cited_works = patent.get("cited_works", [])
-                # Check if any cited work appears to be academic (has DOI, journal, etc.)
-                for work in cited_works:
-                    if isinstance(work, dict):
-                        if work.get("doi") or work.get("journal") or work.get("pmid"):
-                            npl_count += 1
-                            break
-                    elif isinstance(work, str):
-                        # Simple heuristic: academic citations often have DOI-like patterns
-                        if "doi" in work.lower() or "journal" in work.lower():
-                            npl_count += 1
-                            break
+                refs = patent.get("biblio", {}).get("references_cited", {})
+                npl_citations = refs.get("npl_citations", []) if isinstance(refs, dict) else []
+                if npl_citations:
+                    npl_count += 1
             
             # Multiply by 10 to get percentage (10 patents = 100%)
             return npl_count * 10
