@@ -1,29 +1,44 @@
 {
   "subfields": [
     {
-      "name": "CV in Sports Analytics",
-      "core_term": "computer vision sports",
-      "secondary_term": "sports analytics"
+      "name": "Autonomous Checkout Systems",
+      "core_term": "cashierless retail vision",
+      "secondary_term": "just-walk-out technology"
     },
     {
-      "name": "Autonomous Drone Navigation",
-      "core_term": "autonomous drone navigation",
-      "secondary_term": "UAV path planning"
+      "name": "Virtual Try-On and Fitting",
+      "core_term": "AR virtual fitting room",
+      "secondary_term": "digital clothing overlay"
     },
     {
-      "name": "Digital Twin Manufacturing",
-      "core_term": "digital twin manufacturing",
-      "secondary_term": "smart factory simulation"
+      "name": "Visual Search and Discovery",
+      "core_term": "image based product search",
+      "secondary_term": "visual recommendation engine"
     },
     {
-      "name": "AI for Drug Discovery",
-      "core_term": "artificial intelligence drug discovery",
-      "secondary_term": "AI molecule design"
+      "name": "Intelligent Inventory Monitoring",
+      "core_term": "on-shelf availability vision",
+      "secondary_term": "automated retail stock auditing"
     },
     {
-      "name": "Edge AI for IoT",
-      "core_term": "edge computing AI",
-      "secondary_term": "IoT machine learning"
+      "name": "Customer Heatmap and Path Analytics",
+      "core_term": "in-store shopper tracking",
+      "secondary_term": "retail footfall analysis"
+    },
+    {
+      "name": "Dynamic Pricing and Markdown Optimization",
+      "core_term": "retail price elasticity AI",
+      "secondary_term": "automated markdown management"
+    },
+    {
+      "name": "Demand Forecasting and Replenishment",
+      "core_term": "retail predictive analytics",
+      "secondary_term": "supply chain optimization AI"
+    },
+    {
+      "name": "Personalized In-Store Marketing",
+      "core_term": "proximity marketing AI",
+      "secondary_term": "real-time retail personalization"
     }
   ]
 }

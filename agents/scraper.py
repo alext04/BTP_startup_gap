@@ -5,6 +5,11 @@ Orchestrates all scrapers to collect data from all sources.
 
 import json
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import config
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
@@ -166,36 +171,20 @@ class ScraperAgent:
 
 
 def main():
-    """Example usage of the Scraper Agent."""
+    """Standalone entry point — API keys are loaded from .env via config.py."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Gap Mapping Scraper Agent")
-    parser.add_argument(
-        "--targets", "-t",
-        default="targets.json",
-        help="Path to targets.json file"
-    )
-    parser.add_argument(
-        "--output", "-o",
-        default=".",
-        help="Output directory for raw signals"
-    )
-    parser.add_argument(
-        "--semantic-scholar-key",
-        help="Semantic Scholar API key (optional)"
-    )
-    parser.add_argument(
-        "--product-hunt-token",
-        help="Product Hunt personal access token (optional)"
-    )
-    
+    parser.add_argument("--targets", "-t", default="targets.json", help="Path to targets.json")
+    parser.add_argument("--output", "-o", default=".", help="Output directory for raw signals")
+
     args = parser.parse_args()
-    
-    # Initialize agent
+
     agent = ScraperAgent(
-        semantic_scholar_api_key=args.semantic_scholar_key,
-        product_hunt_token=args.product_hunt_token,
-        output_dir=args.output
+        semantic_scholar_api_key=config.SEMANTIC_SCHOLAR_API_KEY,
+        lens_api_key=config.LENS_API_KEY,
+        product_hunt_token=config.PRODUCT_HUNT_TOKEN,
+        output_dir=args.output,
     )
     
     # Load targets

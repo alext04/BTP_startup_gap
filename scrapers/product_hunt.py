@@ -5,24 +5,24 @@ Queries the Product Hunt V2 GraphQL API for startup launch volume and growth.
 
 import requests
 from datetime import datetime, timezone
-from typing import Dict
+from typing import Dict, Optional
 
 
 class ProductHuntScraper:
     """Scraper for Product Hunt launches (entrepreneurial signals)."""
 
-    def __init__(self, product_hunt_token: str):
+    def __init__(self, product_hunt_token: Optional[str] = None):
         """
         Initialize the Product Hunt scraper.
 
         Args:
-            product_hunt_token: Personal API token (Authorization: Bearer <token>).
+            product_hunt_token: Personal API token. Set PRODUCT_HUNT_TOKEN in .env.
         """
         self.token = product_hunt_token
         self.url = "https://api.producthunt.com/v2/api/graphql"
         self.headers = {
             "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
     def scrape(self, core_term: str, secondary_term: str) -> Dict:
@@ -36,6 +36,15 @@ class ProductHuntScraper:
         Returns:
             Dictionary with Product Hunt metrics.
         """
+        if not self.token:
+            print("  [Product Hunt] No token configured — set PRODUCT_HUNT_TOKEN in .env")
+            return {
+                "ph_launches_3yr": "N/A",
+                "ph_growth_yoy": "N/A",
+                "scrape_timestamp": datetime.now(timezone.utc).isoformat(),
+                "source": "product_hunt",
+            }
+
         print(f"  [Product Hunt] Scraping: '{core_term} {secondary_term}'")
         search_terms = f"{core_term} {secondary_term}"
         
