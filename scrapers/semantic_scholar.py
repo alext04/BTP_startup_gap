@@ -26,7 +26,9 @@ class SemanticScholarScraper:
         self.session = requests.Session()
         if api_key:
             self.session.headers.update({"x-api-key": api_key})
-        self.rate_limit_delay = 3.5  # 100 req/5min without API key
+        # Standard API Key is 1 RPS. We use 2.0s to be safe and avoid burst triggers.
+        # If no API key, we use 5.0s (Public limit is ~100 per 5 min).
+        self.rate_limit_delay = 2.0 if api_key else 5.0
     
     def _make_request(self, params: Dict) -> Optional[Dict]:
         """Make a rate-limited request to Semantic Scholar API with retry."""
@@ -39,16 +41,19 @@ class SemanticScholarScraper:
                 if params.get("limit") == 0:
                     params["limit"] = 1
                 response = self.session.get(self.BASE_URL, params=params, timeout=30)
+                
                 if response.status_code == 429:
-                    delay = min(delay * 3, 30)  # Exponential backoff
-                    print(f"  Semantic Scholar rate limited, retrying in {delay}s (attempt {attempt+1}/{max_retries})")
+                    # If rate limited, wait significantly longer
+                    wait_time = 45 if attempt == 0 else 60
+                    print(f"  [Semantic Scholar] Rate limited. Waiting {wait_time}s before retry {attempt+1}/{max_retries}...")
+                    time.sleep(wait_time)
+                    delay = self.rate_limit_delay * 2 # Increase base delay for remaining calls
                     continue
+                    
                 response.raise_for_status()
                 return response.json()
             except requests.RequestException as e:
-                if attempt < max_retries and "429" in str(e):
-                    delay = min(delay * 3, 30)
-                    print(f"  Retrying in {delay}s...")
+                if attempt < max_retries and response.status_code == 429:
                     continue
                 print(f"Semantic Scholar API error: {e}")
                 return None

@@ -15,6 +15,7 @@ from typing import List, Dict, Optional
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import config
 from agents.scraper import ScraperAgent
 from processor.data_architect import DataArchitect
 from visualizer.plot_engine import VisualizationAgent
@@ -35,41 +36,31 @@ class Orchestrator:
     - Detailed logging per subfield
     """
     
-    def __init__(
-        self,
-        output_dir: str = ".",
-        logs_dir: str = "logs",
-        semantic_scholar_api_key: Optional[str] = None,
-        github_token: Optional[str] = None
-    ):
+    def __init__(self, output_dir: str = ".", logs_dir: str = "logs"):
         """
-        Initialize the Orchestrator.
-        
+        Initialize the Orchestrator. API keys are read from .env via config.py.
+
         Args:
             output_dir: Directory for all output files.
             logs_dir: Directory for log files.
-            semantic_scholar_api_key: Optional API key for Semantic Scholar.
-            github_token: Optional GitHub token for higher rate limits.
         """
         self.output_dir = output_dir
         self.logs_dir = logs_dir
-        
-        # Create directories
+
         os.makedirs(output_dir, exist_ok=True)
         os.makedirs(logs_dir, exist_ok=True)
-        
-        # Setup logging
+
         self._setup_logging()
-        
-        # Initialize agents
+
         self.scraper = ScraperAgent(
-            semantic_scholar_api_key=semantic_scholar_api_key,
-            github_token=github_token,
-            output_dir=output_dir
+            semantic_scholar_api_key=config.SEMANTIC_SCHOLAR_API_KEY,
+            lens_api_key=config.LENS_API_KEY,
+            product_hunt_token=config.PRODUCT_HUNT_TOKEN,
+            output_dir=output_dir,
         )
         self.architect = DataArchitect(output_dir=output_dir, logs_dir=logs_dir)
         self.visualizer = VisualizationAgent(output_dir=output_dir, logs_dir=logs_dir)
-        
+
         self.logger.info(f"Orchestrator initialized. Output dir: {output_dir}")
     
     def _setup_logging(self):
@@ -269,14 +260,6 @@ Examples:
         help="Directory for log files (default: logs)"
     )
     parser.add_argument(
-        "--semantic-scholar-key",
-        help="Semantic Scholar API key (optional)"
-    )
-    parser.add_argument(
-        "--github-token",
-        help="GitHub personal access token (optional)"
-    )
-    parser.add_argument(
         "--skip-scrape",
         action="store_true",
         help="Skip scraping step (use existing raw signals)"
@@ -300,13 +283,7 @@ Examples:
     if not os.path.exists(args.targets):
         parser.error(f"Targets file not found: {args.targets}")
     
-    # Initialize and run orchestrator
-    orchestrator = Orchestrator(
-        output_dir=args.output,
-        logs_dir=args.logs,
-        semantic_scholar_api_key=args.semantic_scholar_key,
-        github_token=args.github_token
-    )
+    orchestrator = Orchestrator(output_dir=args.output, logs_dir=args.logs)
     
     results = orchestrator.run_pipeline(
         targets_file=args.targets,

@@ -1,0 +1,9 @@
+{
+  "subfields": [
+    {
+      "name": "Test Subfield",
+      "core_term": "artificial intelligence",
+      "secondary_term": "machine learning"
+    }
+  ]
+}

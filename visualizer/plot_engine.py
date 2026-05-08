@@ -109,16 +109,14 @@ class VisualizationAgent:
         ]
         area_b_sil = [
             'NPL Citation Rate (3yr %)',
-            'Corporate Patent Share (3yr %)',
+            'Corporate Patent Share (3yr %)'
+        ]
+        area_c = [
+            'Product Hunt Launches (3yr)',
+            'Product Hunt Growth (YoY %)',
             'Form-D Filing Count (3yr)',
             'Capital Deployed (3yr $M)',
             'PE/VC Filing Growth (YoY %)'
-        ]
-        area_c = [
-            'SO Question Vol (12mo)',
-            'SO Question Growth (12mo %)',
-            'GitHub Repo Count (3Y)',
-            'GitHub Star Growth (12mo %)'
         ]
         
         # 1. Standardize all base variables individually

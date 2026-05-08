@@ -1,0 +1,13 @@
+
+============================================================
+Timestamp: 2026-04-23T06:46:17.887113+00:00
+Subfields: 5
+
+Computed Metrics Summary:
+                             MDS_z      RI_z  SIL_z        RG        TG
+Subfield                                                               
+CV in Sports Analytics         2.0  1.721223    0.0  0.278777  1.721223
+Autonomous Drone Navigation   -0.5 -0.759033    0.0  0.259033 -0.759033
+Digital Twin Manufacturing    -0.5  0.555876    0.0 -1.055876  0.555876
+AI for Drug Discovery         -0.5 -0.759033    0.0  0.259033 -0.759033
+Edge AI for IoT               -0.5 -0.759033    0.0  0.259033 -0.759033

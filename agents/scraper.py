@@ -5,12 +5,17 @@ Orchestrates all scrapers to collect data from all sources.
 
 import json
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import config
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 from scrapers.semantic_scholar import SemanticScholarScraper
 from scrapers.lens_org import LensOrgScraper
-from scrapers.market_demand import MarketDemandScraper
+from scrapers.product_hunt import ProductHuntScraper
 from scrapers.edgar_form_d import EdgarFormDScraper
 
 
@@ -19,13 +24,15 @@ class ScraperAgent:
     The Scraper Agent coordinates data collection from all sources:
     - Semantic Scholar (Research)
     - Lens.org (Patents)
-    - Stack Overflow & GitHub (Market Demand)
+    - Product Hunt (Venture/Entrepreneurial Demand)
+    - SEC EDGAR (PE/VC Form-D Filings)
     """
     
     def __init__(
         self,
         semantic_scholar_api_key: Optional[str] = None,
-        github_token: Optional[str] = None,
+        lens_api_key: Optional[str] = None,
+        product_hunt_token: Optional[str] = None,
         output_dir: str = "."
     ):
         """
@@ -33,12 +40,13 @@ class ScraperAgent:
         
         Args:
             semantic_scholar_api_key: Optional API key for Semantic Scholar.
-            github_token: Optional GitHub token for higher rate limits.
+            lens_api_key: Optional API key for Lens.org.
+            product_hunt_token: Optional Product Hunt token for authentication.
             output_dir: Directory to save raw signal files.
         """
         self.semantic_scholar = SemanticScholarScraper(semantic_scholar_api_key)
-        self.lens_org = LensOrgScraper()
-        self.market_demand = MarketDemandScraper(github_token)
+        self.lens_org = LensOrgScraper(lens_api_key)
+        self.product_hunt = ProductHuntScraper(product_hunt_token)
         self.edgar_form_d = EdgarFormDScraper()
         self.output_dir = output_dir
     
@@ -61,7 +69,7 @@ class ScraperAgent:
         research_data = self.semantic_scholar.scrape(core_term, secondary_term)
         patent_data = self.lens_org.scrape(core_term, secondary_term)
         form_d_data = self.edgar_form_d.scrape(core_term, secondary_term)
-        market_data = self.market_demand.scrape(core_term, secondary_term)
+        ph_data = self.product_hunt.scrape(core_term, secondary_term)
         
         # Combine all data
         combined_data = {
@@ -73,7 +81,7 @@ class ScraperAgent:
             **research_data,
             **patent_data,
             **form_d_data,
-            **market_data
+            **ph_data
         }
         
         return combined_data
@@ -123,10 +131,8 @@ class ScraperAgent:
                     "form_d_filing_count_3yr": "N/A",
                     "form_d_capital_deployed_mil": "N/A",
                     "form_d_filing_growth_yoy": "N/A",
-                    "so_question_volume": "N/A",
-                    "so_question_growth": "N/A",
-                    "github_repo_count_3y": "N/A",
-                    "github_star_growth": "N/A",
+                    "ph_launches_3yr": "N/A",
+                    "ph_growth_yoy": "N/A",
                     "scrape_timestamp": datetime.now(timezone.utc).isoformat()
                 })
         
@@ -165,36 +171,20 @@ class ScraperAgent:
 
 
 def main():
-    """Example usage of the Scraper Agent."""
+    """Standalone entry point — API keys are loaded from .env via config.py."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Gap Mapping Scraper Agent")
-    parser.add_argument(
-        "--targets", "-t",
-        default="targets.json",
-        help="Path to targets.json file"
-    )
-    parser.add_argument(
-        "--output", "-o",
-        default=".",
-        help="Output directory for raw signals"
-    )
-    parser.add_argument(
-        "--semantic-scholar-key",
-        help="Semantic Scholar API key (optional)"
-    )
-    parser.add_argument(
-        "--github-token",
-        help="GitHub personal access token (optional)"
-    )
-    
+    parser.add_argument("--targets", "-t", default="targets.json", help="Path to targets.json")
+    parser.add_argument("--output", "-o", default=".", help="Output directory for raw signals")
+
     args = parser.parse_args()
-    
-    # Initialize agent
+
     agent = ScraperAgent(
-        semantic_scholar_api_key=args.semantic_scholar_key,
-        github_token=args.github_token,
-        output_dir=args.output
+        semantic_scholar_api_key=config.SEMANTIC_SCHOLAR_API_KEY,
+        lens_api_key=config.LENS_API_KEY,
+        product_hunt_token=config.PRODUCT_HUNT_TOKEN,
+        output_dir=args.output,
     )
     
     # Load targets
