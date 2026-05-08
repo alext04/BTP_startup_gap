@@ -6,15 +6,13 @@ Extracts paper counts and citation intensity from Semantic Scholar.
 import requests
 import time
 from typing import Dict, Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 
 
 class SemanticScholarScraper:
     """Scraper for Semantic Scholar research metrics."""
     
     BASE_URL = "https://api.semanticscholar.org/graph/v1/paper/search"
-    DATE_RANGE_START = "2023-01-01"
-    DATE_RANGE_END = "2025-12-31"
     
     def __init__(self, api_key: Optional[str] = None):
         """
@@ -53,27 +51,27 @@ class SemanticScholarScraper:
                 response.raise_for_status()
                 return response.json()
             except requests.RequestException as e:
-                if attempt < max_retries and response.status_code == 429:
+                if attempt < max_retries and isinstance(e, requests.HTTPError) and e.response is not None and e.response.status_code == 429:
                     continue
                 print(f"Semantic Scholar API error: {e}")
                 return None
         return None
     
+    @staticmethod
+    def _year_range() -> tuple:
+        """Return (oldest_year, newest_year) for the last 3 complete calendar years."""
+        current = date.today().year
+        return current - 3, current - 1
+
     def get_paper_count(self, core_term: str, secondary_term: str) -> Optional[int]:
         """
-        Get total paper count for the given terms in the date range 2023-2025.
-        
-        Args:
-            core_term: Primary search term (e.g., "solid-state battery")
-            secondary_term: Secondary search term (e.g., "energy storage")
-            
-        Returns:
-            Total paper count or None if request fails.
+        Get total paper count for the given terms across the last 3 complete calendar years.
         """
+        yr_start, yr_end = self._year_range()
         query = f'"{core_term}" AND "{secondary_term}"'
         params = {
             "query": query,
-            "year": "2023-2025",
+            "year": f"{yr_start}-{yr_end}",
             "limit": 0  # We only need the count, not results
         }
         
@@ -85,18 +83,12 @@ class SemanticScholarScraper:
     def get_citation_intensity(self, core_term: str, secondary_term: str) -> Optional[float]:
         """
         Calculate citation intensity as the mean citation count of top 10 papers.
-        
-        Args:
-            core_term: Primary search term
-            secondary_term: Secondary search term
-            
-        Returns:
-            Average citation count of top 10 papers or None if request fails.
         """
+        yr_start, yr_end = self._year_range()
         query = f'"{core_term}" AND "{secondary_term}"'
         params = {
             "query": query,
-            "year": "2023-2025",
+            "year": f"{yr_start}-{yr_end}",
             "limit": 10,
             "fields": "citationCount",
             "sort": "relevance"
@@ -115,40 +107,22 @@ class SemanticScholarScraper:
     
     def get_paper_growth_rate(self, core_term: str, secondary_term: str) -> Optional[float]:
         """
-        Calculate YoY paper growth rate (2025 vs 2024).
-        
-        Args:
-            core_term: Primary search term
-            secondary_term: Secondary search term
-            
-        Returns:
-            Growth rate percentage or None if request fails.
+        Calculate YoY paper growth rate: most recent complete year vs the one before it.
         """
+        _, yr_end = self._year_range()
+        yr_prev = yr_end - 1  # e.g. 2024
         query = f'"{core_term}" AND "{secondary_term}"'
-        
-        # Get 2024 count
-        params_2024 = {
-            "query": query,
-            "year": "2024",
-            "limit": 0
-        }
-        result_2024 = self._make_request(params_2024)
-        count_2024 = result_2024.get("total", 0) if result_2024 else 0
-        
-        # Get 2025 count
-        params_2025 = {
-            "query": query,
-            "year": "2025",
-            "limit": 0
-        }
-        result_2025 = self._make_request(params_2025)
-        count_2025 = result_2025.get("total", 0) if result_2025 else 0
-        
-        if count_2024 == 0:
-            return 0.0 if count_2025 == 0 else 100.0
-        
-        growth_rate = ((count_2025 - count_2024) / count_2024) * 100
-        return round(growth_rate, 2)
+
+        result_prev = self._make_request({"query": query, "year": str(yr_prev), "limit": 0})
+        count_prev = result_prev.get("total", 0) if result_prev else 0
+
+        result_recent = self._make_request({"query": query, "year": str(yr_end), "limit": 0})
+        count_recent = result_recent.get("total", 0) if result_recent else 0
+
+        if count_prev == 0:
+            return 0.0 if count_recent == 0 else 100.0
+
+        return round(((count_recent - count_prev) / count_prev) * 100, 2)
     
     def scrape(self, core_term: str, secondary_term: str) -> Dict:
         """

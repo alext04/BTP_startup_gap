@@ -21,6 +21,7 @@ class LensOrgScraper:
     def __init__(self, api_key: Optional[str] = None):
         """Initialize the scraper with a session and optional API key."""
         self.api_key = api_key
+        self._unauthorized = False  # set True on first 401 to skip remaining calls
         self.session = requests.Session()
         self.session.headers.update({
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
@@ -32,24 +33,31 @@ class LensOrgScraper:
             })
         self.rate_limit_delay = 2.0  # seconds between requests (Lens.org is stricter)
     
-    @staticmethod
-    def _build_query(core_term: str, secondary_term: str) -> str:
-        """Build Lens.org boolean query from search terms."""
+    def _build_query(self, core_term: str, secondary_term: str) -> str:
+        """Build Lens.org Lucene query with date range baked in."""
         def term_to_bool(term: str) -> str:
             words = term.strip().split()
             if len(words) == 1:
                 return words[0]
             return "(" + " AND ".join(words) + ")"
-        return f"{term_to_bool(core_term)} AND {term_to_bool(secondary_term)}"
+        text_part = f"{term_to_bool(core_term)} AND {term_to_bool(secondary_term)}"
+        date_part = f"date_published:[{self.DATE_RANGE_START} TO {self.DATE_RANGE_END}]"
+        return f"({text_part}) AND {date_part}"
     
     def _make_request(self, payload: Dict) -> Optional[Dict]:
         """Make a rate-limited POST request to Lens.org API."""
         if not self.api_key:
             print("  [Lens.org] No API key provided, skipping API call")
             return None
+        if self._unauthorized:
+            return None
         try:
             time.sleep(self.rate_limit_delay)
             response = self.session.post(self.API_URL, json=payload, timeout=30)
+            if response.status_code == 401:
+                self._unauthorized = True
+                print("  [Lens.org] 401 Unauthorized ")
+                return None
             if response.status_code == 429:
                 print("  [Lens.org] Rate limited, waiting 10s...")
                 time.sleep(10)
@@ -100,15 +108,13 @@ class LensOrgScraper:
         
         payload = {
             "query": query,
-            "size": 0  # Get count only
+            "size": 0,  # count only
         }
-        
+
         result = self._make_request(payload)
         if result and "total" in result:
             return result["total"]
-        
-        # Fallback to web scraping
-        return self._scrape_web_count(f'"{core_term}" "{secondary_term}"')
+        return None
     
     def get_top_assignees(self, core_term: str, secondary_term: str, limit: int = 10) -> List[Dict]:
         """
@@ -127,7 +133,7 @@ class LensOrgScraper:
         payload = {
             "query": query,
             "size": limit,
-            "include": ["biblio.parties"]
+            "include": ["biblio.parties"],
         }
         
         result = self._make_request(payload)
@@ -224,7 +230,7 @@ class LensOrgScraper:
         payload = {
             "query": query,
             "size": 10,
-            "include": ["biblio.references_cited"]
+            "include": ["biblio.references_cited"],
         }
         
         result = self._make_request(payload)

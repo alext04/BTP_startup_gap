@@ -113,23 +113,29 @@ class EdgarFormDScraper:
 
     def get_filing_count(
         self, core_term: str, secondary_term: str,
-        start_date: str = "2023-01-01", end_date: str = "2025-12-31"
+        start_date: str = "2023-01-01", end_date: str = "2025-12-31",
+        query_term: Optional[str] = None
     ) -> Tuple[int, List[Dict]]:
         """
         Get Form-D filing count and hit metadata for a subfield.
 
-        Uses OR logic: searches for core_term OR secondary_term.
-
         Args:
-            core_term: Primary search term.
-            secondary_term: Secondary search term.
+            core_term: Primary search term (fallback keyword search, no exact phrase).
+            secondary_term: Secondary search term (used in fallback OR).
             start_date: Range start.
             end_date: Range end.
+            query_term: Optional override. If set, sent verbatim to EFTS (no quotes
+                added). Use short business phrases, e.g. "cashierless checkout" or
+                "dynamic pricing". Supports EFTS operators: | for OR, + for AND.
 
         Returns:
             Tuple of (total_count, list_of_hit_metadata).
         """
-        query = f'"{core_term}" OR "{secondary_term}"'
+        if query_term:
+            query = query_term
+        else:
+            # Keyword search (no exact-phrase quotes) with OR between the two terms
+            query = f'{core_term} | {secondary_term}'
         result = self._efts_search(query, start_date, end_date)
 
         if not result:
@@ -188,7 +194,8 @@ class EdgarFormDScraper:
         }
 
     def get_filing_growth_rate(
-        self, core_term: str, secondary_term: str
+        self, core_term: str, secondary_term: str,
+        query_term: Optional[str] = None
     ) -> Optional[float]:
         """
         Calculate YoY filing growth rate (2025 vs 2024).
@@ -196,17 +203,20 @@ class EdgarFormDScraper:
         Args:
             core_term: Primary search term.
             secondary_term: Secondary search term.
+            query_term: Optional override passed through to get_filing_count.
 
         Returns:
             Growth rate percentage or None on failure.
         """
         count_2024, _ = self.get_filing_count(
             core_term, secondary_term,
-            start_date="2024-01-01", end_date="2024-12-31"
+            start_date="2024-01-01", end_date="2024-12-31",
+            query_term=query_term
         )
         count_2025, _ = self.get_filing_count(
             core_term, secondary_term,
-            start_date="2025-01-01", end_date="2025-12-31"
+            start_date="2025-01-01", end_date="2025-12-31",
+            query_term=query_term
         )
 
         if count_2024 == 0:
@@ -215,21 +225,28 @@ class EdgarFormDScraper:
         growth = ((count_2025 - count_2024) / count_2024) * 100
         return round(growth, 2)
 
-    def scrape(self, core_term: str, secondary_term: str) -> Dict:
+    def scrape(self, core_term: str, secondary_term: str,
+               query_term: Optional[str] = None) -> Dict:
         """
         Scrape all Form-D PE/VC metrics for a subfield.
 
         Args:
             core_term: Primary search term.
             secondary_term: Secondary search term.
+            query_term: Optional short business phrase for EFTS (e.g. "dynamic pricing").
+                        Set via form_d_term in targets.json. Falls back to keyword
+                        search across core_term | secondary_term if not provided.
 
         Returns:
             Dictionary with Form-D metrics.
         """
-        print(f"  [EDGAR Form-D] Scraping: '{core_term}' OR '{secondary_term}'")
+        effective_query = query_term if query_term else f'{core_term} | {secondary_term}'
+        print(f"  [EDGAR Form-D] Query: '{effective_query}'")
 
         # Phase 1: Get filing count and hits
-        filing_count, hits = self.get_filing_count(core_term, secondary_term)
+        filing_count, hits = self.get_filing_count(
+            core_term, secondary_term, query_term=query_term
+        )
         print(f"  [EDGAR Form-D] Found {filing_count} Form-D filings (3yr)")
 
         # Phase 2: Parse XML for capital data
@@ -241,7 +258,9 @@ class EdgarFormDScraper:
                   f"(from {capital_data['filings_parsed']} parsed filings)")
 
         # Filing growth
-        filing_growth = self.get_filing_growth_rate(core_term, secondary_term)
+        filing_growth = self.get_filing_growth_rate(
+            core_term, secondary_term, query_term=query_term
+        )
 
         return {
             "form_d_filing_count_3yr": filing_count,

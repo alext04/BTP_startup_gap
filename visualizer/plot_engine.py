@@ -268,7 +268,7 @@ class VisualizationAgent:
         sm.set_array([])
         
         cbar = plt.colorbar(sm, ax=ax, fraction=0.035, pad=0.03)
-        cbar.set_label("Gap Severity (Red = Under-commercialized, Green = Mature)")
+        cbar.set_label("Gap Severity (Green = Underserved Gap, Red = Mature/Commercialized)")
         
         # Bubble Size Legend
         legend_elements = [
